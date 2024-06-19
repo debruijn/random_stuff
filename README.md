@@ -6,9 +6,11 @@ I can access them easier from other devices, and I can potentially share this ou
 
 ## Current contents
 (Knowing me, this might start getting outdated occassionally)
-- Simulate_swiss: a script to show how you could potentially organize a 24 team 4 win or 5 win Swiss tournament. 
+- simulate_swiss: a script to show how you could potentially organize a 24 team 4 win or 5 win Swiss tournament. 
 Motivation: in current Counterstrike setup for the Major tournaments, 24 teams do a 16 team 3 win Swiss tournament, 
 with 8 teams skipping the first part, and I don't like teams skipping a stage.
+- rendercv_makefile: the Makefile that I use to create different versions of my resume based on a single YAML, allowing 
+for versions without my phone number and email. The YAML that I use is not provided, but the output is. :)
 
 ## General type of content to be expected
 Going by memory of type of stuff I have done in the past and I'd like to put in here in the future:
@@ -18,4 +20,3 @@ Going by memory of type of stuff I have done in the past and I'd like to put in 
 Ludgate's Irish logarithm which uses a table to calculate the product of two integers using only addition.
 - Testing some random online script - if I will include it in this repo I should include references of course.
 - Experimenting with use cases of not-often used parts of standard Python like Defaultdict
-
