@@ -18,3 +18,4 @@ Going by memory of type of stuff I have done in the past and I'd like to put in 
 Ludgate's Irish logarithm which uses a table to calculate the product of two integers using only addition.
 - Testing some random online script - if I will include it in this repo I should include references of course.
 - Experimenting with use cases of not-often used parts of standard Python like Defaultdict
+
