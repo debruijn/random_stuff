@@ -3,21 +3,30 @@
 
 # (Also known as Euler's lucky numbers, but that is less fun. See https://en.wikipedia.org/wiki/Lucky_numbers_of_Euler)
 
-N = 60  # Max number to check
-run_to_N = False  # Whether to run k from 1 to n or from 1 to N, for each n  TODO
+from functools import cache
+
+N = 200  # Max number to check
+run_to_N = False  # Whether to run k from 1 to n or from 1 to N, for each n. Use False for the traditional definition.
 
 
+@cache
 def is_prime(x):
-    # TODO: actually make a prime function; either use sympy package or create own function
-    if x in (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59):
-        return True
-    return False
+    for k in range(2, int(x**0.5)+1):
+        if x/k == int(x/k):
+            return False
+    return True
 
 
-counts = []
-for n in range(1, N+1):
-    counts.append(sum([is_prime(k**2 - k + n) for k in range (1, n)]))
-    if counts[n-1] == n-1:
-        print(f'Caboose number found: {n}!')
+counts = [0, 0]
+found_any = False
+for n in range(2, N+1):
+    counts.append(sum([is_prime(k**2 - k + n) for k in range(1, N if run_to_N else n)]))
+    if counts[n] == n-1:
+        if not found_any:
+            print('Caboose number found: ')
+            found_any = True
+        print(f'{n}')
 
-
+near_hits = {i: counts[i]/(i-1) for i in range(2, n) if 0.5 < counts[i]/(i-1) < 1}
+print('\nNumbers close to being Caboose:')
+[print(f'{k} with {v*100:.2f}%') for k, v in near_hits.items()]
