@@ -12,6 +12,7 @@ with 8 teams skipping the first part, and I don't like teams skipping a stage.
 - rendercv_makefile: the Makefile that I use to create different versions of my resume based on a single YAML, allowing 
 for versions without my phone number and email. The YAML that I use is not provided, but the output is. :)
 - find_caboose_numbers: a script to investigate Caboose numbers and graphically show them (see script for more info)
+- divisible_by_7: a script to find remainders of dividing by 7 (or any other number) in a different way than usual
 
 ## General type of content to be expected
 Going by memory of type of stuff I have done in the past and I'd like to put in here in the future:
