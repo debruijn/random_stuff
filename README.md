@@ -14,6 +14,7 @@ for versions without my phone number and email. The YAML that I use is not provi
 - math_video_inspired: multiple small scripts based on watching simple math videos
   - find_caboose_numbers: a script to investigate Caboose numbers and graphically show them (see script for more info)
   - divisible_by_k: a script to find remainders of dividing by 7 (or any other number) in a different way than usual
+  - simulate_bingo: a script to verify the theoretical property of a horizontal win vs a vertical win in bingo
 
 ## General type of content to be expected
 Going by memory of type of stuff I have done in the past and I'd like to put in here in the future:
