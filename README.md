@@ -15,6 +15,7 @@ for versions without my phone number and email. The YAML that I use is not provi
   - find_caboose_numbers: a script to investigate Caboose numbers and graphically show them (see script for more info)
   - divisible_by_k: a script to find remainders of dividing by 7 (or any other number) in a different way than usual
   - simulate_bingo: a script to verify the theoretical property of a horizontal win vs a vertical win in bingo
+  - goldbach_twins: a script to verify that there are 35 exceptions to the goldbach conjecture applied to twin primes
 - letters_to_numbers: a CSV contain a very subjective mapping of letters to numbers in a synesthesia-like way
 
 I also include the `local` folder in here, which include scripts I keep to myself (at least for now). Examples of this
