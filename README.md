@@ -16,6 +16,7 @@ for versions without my phone number and email. The YAML that I use is not provi
   - divisible_by_k: a script to find remainders of dividing by 7 (or any other number) in a different way than usual
   - simulate_bingo: a script to verify the theoretical property of a horizontal win vs a vertical win in bingo
   - goldbach_twins: a script to verify that there are 35 exceptions to the goldbach conjecture applied to twin primes
+  - ludgate_irish_algorithm: a script to do multiplication using a "fake log table" and addition only
 - letters_to_numbers: a CSV contain a very subjective mapping of letters to numbers in a synesthesia-like way
 
 I also include the `local` folder in here, which include scripts I keep to myself (at least for now). Examples of this
@@ -25,7 +26,8 @@ is a collection of bash commands that I use occasionally (enough to want to reus
 Going by memory of type of stuff I have done in the past and I'd like to put in here in the future:
 - Simulation of probability that for two equally good Tennis players, the player with least points scored wins.
 - Messing around with GUI utility packages, e.g. "Plot an interactive table using a TKinter competitor"
-- Investigating mathematical properties after watching a Numberphile or Standupmaths video. For example, implementing 
-Ludgate's Irish logarithm which uses a table to calculate the product of two integers using only addition.
+- Investigating mathematical properties after watching a Numberphile or Standupmaths video. ~~For example, implementing 
+Ludgate's Irish logarithm which uses a table to calculate the product of two integers using only addition.~~ I have now
+added this script from my backlog.
 - Testing some random online script - if I will include it in this repo I should include references of course.
 - Experimenting with use cases of not-often used parts of standard Python like Defaultdict
