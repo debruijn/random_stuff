@@ -1,4 +1,4 @@
-# This video replicates constructing the Twin Primes that meet the Goldbach Conjecture, based on the Numberphile video
+# This script replicates constructing the Twin Primes that meet the Goldbach Conjecture, based on the Numberphile video
 # https://www.youtube.com/watch?v=Gojd8mTl3Do
 # Next to this, it constructs a list for each number how many options there are to use twin primes.
 from itertools import pairwise, combinations_with_replacement
