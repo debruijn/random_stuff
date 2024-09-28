@@ -18,6 +18,7 @@ for versions without my phone number and email. The YAML that I use is not provi
   - goldbach_twins: a script to verify that there are 35 exceptions to the goldbach conjecture applied to twin primes
   - ludgate_irish_algorithm: a script to do multiplication using a "fake log table" and addition only
 - letters_to_numbers: a CSV contain a very subjective mapping of letters to numbers in a synesthesia-like way
+- extended_standardlibs: Python functionality that are extensions of modules like itertools, functools and collections
 
 I also include the `local` folder in here, which include scripts I keep to myself (at least for now). Examples of this
 is a collection of bash commands that I use occasionally (enough to want to reuse it, not enough to remember it).
