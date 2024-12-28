@@ -113,6 +113,58 @@ def derangement_ref2(int_iterable, r=None):
         yield p
 
 
+def derangements(iterable, r=None, restrict: [list | tuple | dict | None ] = None):
+    """Yield successive derangements of the elements in *iterable*.
+
+            >>> sorted(derangements([0, 1, 2]))
+            [(1, 2, 0), (2, 0, 1)]
+
+    Equivalent to yielding from ``permutations(iterable)``, except all
+    permutations removed that have at least one integer k assigned at index k.
+
+    If *r* is given, only the *r*-length derangements are yielded.
+
+        >>> sorted(derangements(range(3), 2))
+        [(1, 0), (1, 2), (2, 0)]
+        >>> sorted(derangements([0, 2, 3], 2))
+        [(2, 0), (2, 3), (3, 0), (3, 2)]
+
+    *iterable* doesn't strictly need to consist of integers, but for
+    non-integer iterables ``permutations`` will be equivalent but faster:
+
+        >>> set(derangements(["a", 2.5, 1j])) == \
+                set(permutations(["a", 2.5, 1j]))
+        True
+
+    There can be a use case in mixed iterables though:
+
+        >>> list(derangements([0, 1, "green"]))
+        [(1, 0, 'green'), (1, 'green', 0), ('green', 0, 1)]
+
+    Note that in case of duplicates in input, these are treated as separate
+    entries with the same restriction in the derangements. For example:
+
+        >>> sorted(derangements([0, 0, 1]))
+        [(1, 0, 0), (1, 0, 0)]
+
+    If deduplicated derangements are needed, use``distinct_derangements``.
+
+    """
+    if restrict is None:
+        restrict = list(range(len(iterable)))
+
+    if type(restrict) in (list, tuple):
+        for p in permutations(iterable, r=r):
+            if any(x == p[i] for i, x in enumerate(restrict) if ((i < r) if r is not None else True)):
+                continue
+            yield p
+    else:  # dict
+        for p in permutations(iterable, r=r):
+            if any(k == p[v] for k, vs in restrict.items() for v in vs if ((v < r) if r is not None else True)):
+                continue
+            yield p
+
+
 def derangement_alt(int_iterable):
     return [copy.copy(s) for s in distinct_permutations(int_iterable) if not any([a == b for a, b in zip(s, int_iterable)])]
 
