@@ -1,7 +1,4 @@
-extern crate core;
-
-use std::collections::{HashMap, HashSet};
-use std::iter::FlatMap;
+use std::collections::HashMap;
 use std::ops::Range;
 use itertools::Itertools;
 
