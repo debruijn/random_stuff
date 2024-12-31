@@ -2,6 +2,84 @@ use itertools::Itertools;
 use std::collections::HashMap;
 use std::ops::Range;
 use std::time::Instant;
+use std::iter::FromIterator;
+
+/// An iterator adaptor that iterates through all the unique multiset permutations of the iterator.
+///  The supplied iterator is fully consumed, so it must be finite.
+///
+/// See [`.multiset_permutations()`](crate::Itertools::multiset_permutations) for
+/// more information.
+#[derive(Debug, Clone)]
+pub struct MultisetPermutations<I> {
+    buffer: Vec<I>,
+    start: bool,
+    index: usize,
+}
+
+pub fn multiset_permutations<I: Iterator>(iter: I) -> MultisetPermutations<I::Item>
+where
+    I: Iterator,
+    I::Item: Ord,
+{
+    let mut buffer = Vec::from_iter(iter);
+    buffer.sort_unstable_by(|a, b| b.cmp(a));
+    let length = buffer.len();
+    MultisetPermutations {
+        buffer: buffer,
+        start: true,
+        index: length.saturating_sub(2),
+    }
+}
+
+impl<I: Copy> Iterator for MultisetPermutations<I>
+where
+    I: Ord,
+{
+    type Item = Vec<I>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // Start iteration with buffer itself
+        if self.start {
+            self.start = false;
+            return Some(self.buffer.clone());
+        }
+
+        // Exhausted iteration
+        let has_two_next = self.index + 2 < self.buffer.len();
+        if !has_two_next
+            && (self.buffer.len() <= self.index + 1
+            || self.buffer[0] <= self.buffer[self.index + 1])
+        {
+            return None;
+        }
+
+        // Determine shift index
+        let shift_index = if has_two_next && self.buffer[self.index + 2] <= self.buffer[self.index]
+        {
+            self.index + 2
+        } else {
+            self.index + 1
+        };
+
+        // Prefix shift
+        let shift_elem = self.buffer[shift_index];
+        let mut swap_index = shift_index;
+        while swap_index > 0 {
+            self.buffer[swap_index] = self.buffer[swap_index - 1];
+            swap_index -= 1;
+        }
+        self.buffer[0] = shift_elem;
+
+        // Update index
+        if self.buffer[0] < self.buffer[1] {
+            self.index = 0;
+        } else {
+            self.index += 1;
+        }
+
+        Some(self.buffer.clone())
+    }
+}
 
 fn derangements_range(n: usize) -> Vec<Vec<usize>> {
     match n {
@@ -102,6 +180,26 @@ fn main() {
     let n = 10;
 
     {
+        let this: [usize; 8] = [0, 0, 0, 1, 1, 2, 2, 3];
+        let before = Instant::now();
+        let mut perms = Vec::new();
+        for i in this.into_iter().permutations(8) {
+            perms.push(i);
+        }
+        let after = Instant::now();
+        println!("Permutations 8: {:?} in {:?}", perms.len(), after - before);
+    }
+    {
+        let this: [usize; 8] = [0, 0, 0, 1, 1, 2, 2, 3];
+        let before = Instant::now();
+        let mut perms = Vec::new();
+        for i in Itertools::permutations(this.into_iter(), 8) {
+            perms.push(i);
+        }
+        let after = Instant::now();
+        println!("Permutations 8 alt: {:?} in {:?}", perms.len(), after - before);
+    }
+    {
         let this: [usize; 10] = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3];
         let before = Instant::now();
         let mut perms = Vec::new();
@@ -109,7 +207,7 @@ fn main() {
             perms.push(i);
         }
         let after = Instant::now();
-        println!("Permutations: {:?} in {:?}", perms.len(), after - before);
+        println!("Permutations 10: {:?} in {:?}", perms.len(), after - before);
     }
     {
         let this: [usize; 10] = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3];
@@ -121,6 +219,20 @@ fn main() {
         let after = Instant::now();
         println!(
             "Distinct permutations: {:?} in {:?}",
+            perms.len(),
+            after - before
+        );
+    }
+    {
+        let this: Vec<usize> = vec![0, 0, 0, 1, 1, 1, 2, 2, 2, 3];
+        let before = Instant::now();
+        let mut perms = Vec::new();
+        for i in multiset_permutations(this.into_iter()) {
+            perms.push(i);
+        }
+        let after = Instant::now();
+        println!(
+            "Distinct permutations alt: {:?} in {:?}",
             perms.len(),
             after - before
         );
@@ -154,6 +266,23 @@ fn main() {
         );
     }
     {
+        let this: [usize; 10] = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3];
+        let before = Instant::now();
+        let mut derangs = Vec::new();
+        for i in this.into_iter().permutations(n) {
+            if !i.iter().enumerate().any(|x| x.0 == *x.1) {
+                derangs.push(i);
+            }
+        }
+        derangs = derangs.into_iter().unique().collect_vec();
+        let after = Instant::now();
+        println!(
+            "Distinct derangements alt: {:?} in {:?}",
+            derangs.len(),
+            after - before
+        );
+    }
+    {
         let before = Instant::now();
         let derangs = derangements_range(n);
         let after = Instant::now();
@@ -167,7 +296,7 @@ fn main() {
         let this: Range<usize> = 0..n;
         let before = Instant::now();
         let mut derangs = Vec::new();
-        for i in this.into_iter().permutations(n) {
+        for i in Itertools::permutations(this.into_iter(), n) {
             if !i.iter().enumerate().any(|x| x.0 == *x.1) {
                 derangs.push(i);
             }
@@ -179,4 +308,60 @@ fn main() {
             after - before
         );
     }
+
+    for i in 2..n {
+        let before = Instant::now();
+        let derangs = derangements_range(i);
+        let after = Instant::now();
+        println!(
+            "Derangements range {i}: {:?} in {:?}",
+            derangs.len(),
+            after - before
+        );
+    }
+
+    let n = 11;
+    {
+        let this: Range<usize> = 0..n;
+        let before = Instant::now();
+        let mut perms = Vec::new();
+        for i in Itertools::permutations(this.into_iter(), n) {
+            perms.push(i);
+        }
+        let after = Instant::now();
+        println!(
+            "Distinct permutations range alt: {:?} in {:?}",
+            perms.len(),
+            after - before
+        );
+    }
+
+
+    {
+        let this: Range<usize> = 0..n;
+        let before = Instant::now();
+        let mut perms = Vec::new();
+        for i in multiset_permutations(this.into_iter()) {
+            perms.push(i);
+        }
+        let after = Instant::now();
+        println!(
+            "Distinct permutations range alt: {:?} in {:?}",
+            perms.len(),
+            after - before
+        );
+    }
+
+    {
+        let this: Range<usize> = 0..n;
+        let before = Instant::now();
+        let perms = Vec::from_iter(multiset_permutations(this.into_iter()));
+        let after = Instant::now();
+        println!(
+            "Distinct permutations range alt: {:?} in {:?}",
+            perms.len(),
+            after - before
+        );
+    }
+
 }
