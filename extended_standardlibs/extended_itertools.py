@@ -3,6 +3,7 @@ import functools
 from functools import partial
 from itertools import pairwise, permutations, cycle
 from collections import deque, defaultdict, Counter
+from unittest import TestCase
 
 
 def pairwise_py(iterable):
@@ -111,6 +112,77 @@ def derangement_ref2(int_iterable, r=None):
     for p in permutations_ref(int_iterable, r=r):
         if any(x == i for i,x in enumerate(p)): continue
         yield p
+
+
+def derangements_range(n):
+    """Yield successive distinct derangements of the range up to *n*.
+
+        >>> sorted(derangements_range(3))
+        [(1, 2, 0), (2, 0, 1)]
+
+    Ignoring output order, this is equal to but significantly faster
+    than ``derangements(range(n))``.
+
+    """
+    if n == 2:
+        yield 1, 0
+    elif n <= 1:
+        yield from []
+    else:
+        lag1 = derangements_range(n - 1)
+        for lag in lag1:
+            for split in range(len(lag)):
+                yield lag[0:split] + (n - 1,) + lag[split + 1 :] + (
+                    lag[split],
+                )
+
+        lag2 = derangements_range(n - 2)
+        for lag in lag2:
+            yield lag + (n - 1, n - 2)
+            for k in range(n - 3, -1, -1):
+                i = lag.index(k)
+                lag = lag[:i] + (k + 1,) + lag[i + 1 :]
+                yield lag[:k] + (n - 1,) + lag[k:] + (k,)
+
+
+
+
+class DerangementsRangeTests(TestCase):
+
+    RANGE_NUM = 8
+
+    def test_range_manual(self):
+        actual = sorted(derangements_range(4))
+        expected = [
+            (1, 0, 3, 2),
+            (1, 2, 3, 0),
+            (1, 3, 0, 2),
+            (2, 0, 3, 1),
+            (2, 3, 0, 1),
+            (2, 3, 1, 0),
+            (3, 0, 1, 2),
+            (3, 2, 0, 1),
+            (3, 2, 1, 0),
+        ]
+        self.assertListEqual(actual, expected)
+
+    def test_range(self):
+        range_in = range(self.RANGE_NUM)
+        actual = set(derangements_range(self.RANGE_NUM))
+        expected = set(
+            [
+                x
+                for x in permutations(range_in)
+                if not any(x[i] == i for i in range_in)
+            ]
+        )
+        self.assertSetEqual(actual, expected)
+
+    def test_ref_impl(self):
+        actual = set(derangements_range(self.RANGE_NUM))
+        expected = set(derangements(range(self.RANGE_NUM)))
+        self.assertSetEqual(actual, expected)
+
 
 
 def derangements(iterable, r=None, restrict: [list | tuple | dict | None ] = None):
@@ -256,7 +328,7 @@ def random_derangement(int_iterable, r=None, k=1, early=True):
     while n_success < k:
         v = list(int_iterable)
         for j in range(r if early else n):
-            p = randint(j, n - 1)
+            p = random.randint(j, n - 1)
             if v[p] == j:
                 break
             else:
