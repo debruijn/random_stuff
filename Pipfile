@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+maturin = "*"
+more-itertools = "*"
 
 [dev-packages]
 
