@@ -82,38 +82,6 @@ def permutations_ref(iterable, r=None):
             return
 
 
-def derangements_int(n, r=None):
-    """Yield successive distinct derangements of the range up to *n*.
-
-            >>> sorted(derangements_int(3))
-            [(1, 2, 0), (2, 0, 1)]
-
-        If *r* is given, only the *r*-length derangements are yielded.
-
-            >>> sorted(derangements_int(3, 2))
-            [(1, 0), (1, 2), (2, 0)]
-
-        """
-    return derangements(range(n), r=r)
-
-
-
-def derangement_ref_int(n, r=None):
-    return derangement_ref(range(n), r=r)
-
-
-def derangement_ref(int_iterable, r=None):
-    for p in permutations(int_iterable, r=r):
-        if any(x == i for i,x in enumerate(p)): continue
-        yield p
-
-
-def derangement_ref2(int_iterable, r=None):
-    for p in permutations_ref(int_iterable, r=r):
-        if any(x == i for i,x in enumerate(p)): continue
-        yield p
-
-
 def derangements_range(n):
     """Yield successive distinct derangements of the range up to *n*.
 
@@ -143,8 +111,6 @@ def derangements_range(n):
                 i = lag.index(k)
                 lag = lag[:i] + (k + 1,) + lag[i + 1 :]
                 yield lag[:k] + (n - 1,) + lag[k:] + (k,)
-
-
 
 
 class DerangementsRangeTests(TestCase):
@@ -235,37 +201,6 @@ def derangements(iterable, r=None, restrict: [list | tuple | dict | None ] = Non
             if any(k == p[v] for k, vs in restrict.items() for v in vs if ((v < r) if r is not None else True)):
                 continue
             yield p
-
-
-def derangement_alt(int_iterable):
-    return [copy.copy(s) for s in distinct_permutations(int_iterable) if not any([a == b for a, b in zip(s, int_iterable)])]
-
-
-def derangement_ref_full(int_iterable, r=None):
-    for p in distinct_permutations(int_iterable, r=r):
-        if any(x == i for i,x in enumerate(p)): continue
-        yield p
-
-# OLD
-# def random_derangement_int(n, r=None):
-#     return random_derangement(range(n), r=r)
-#
-# OLD
-# def random_derangement(int_iterable, r=None, equal_prob=True):
-#     n = len(int_iterable)
-#     if r is None:
-#         r = n
-#     while True:
-#         v = list(int_iterable)
-#         for j in range(r if equal_prob else n):
-#             p = random.randint(j, n-1)
-#             if v[p] == j:
-#                 break
-#             else:
-#                 v[j], v[p] = v[p], v[j]
-#         else:
-#             if (v[r-1] != r-1) if equal_prob else v[-1] != n-1:
-#                 return tuple(v[:r])
 
 
 def random_derangement_full(int_iterable, r=None, k=1):
@@ -359,47 +294,6 @@ def derangement_unique_helper(elements, list_unique, result_list, depth):
                 for g in derangement_unique_helper(elements, list_unique, result_list, depth-1):
                     yield g
                 list_unique[el] += 1
-
-
-def derangements(int_iterable, r=None):
-    """Yield successive derangements of the elements in *int_iterable*.
-
-            >>> sorted(derangements([0, 1, 2]))
-            [(1, 2, 0), (2, 0, 1)]
-
-        Equivalent to yielding from ``permutations(int_iterable)``, except all
-        permutations removed that have at least one integer k assigned at index k.
-
-        If *r* is given, only the *r*-length derangements are yielded.
-
-            >>> sorted(derangements(range(3), 2))
-            [(1, 0), (1, 2), (2, 0)]
-            >>> sorted(derangements([0, 2, 3], 2))
-            [(2, 0), (2, 3), (3, 0), (3, 2)]
-
-        *int_iterable* doesn't strictly need to consist of integers, but for
-        non-integer iterables ``permutations`` will be equivalent but faster:
-
-            >>> set(derangements(["a", 2.5, 1j])) == set(permutations(["a", 2.5, 1j]))
-            True
-
-        There can be a use case in mixed iterables though:
-
-            >>> list(derangements([0, 1, "green"]))
-            [(1, 0, 'green'), (1, 'green', 0), ('green', 0, 1)]
-
-        Note that in case of duplicates in input, these are treated as separate
-        entries with the same restriction in the derangements. For example:
-
-            >>> sorted(derangements([0, 0, 1]))
-            [(1, 0, 0), (1, 0, 0)]
-
-        If deduplicated derangements are needed, look into ``distinct_derangements``.
-
-        """
-    for p in permutations(int_iterable, r=r):
-        if any(x == i for i,x in enumerate(p)): continue
-        yield p
 
 
 @functools.cache
