@@ -113,6 +113,78 @@ def derangements_range(n):
                 yield lag[:k] + (n - 1,) + lag[k:] + (k,)
 
 
+def derangements_fast(iterable, r=None, by_index=True):
+    """Yield successive derangements of the elements in *iterable*.
+
+    A derangement is a permutation in which no element appears at its original
+    index. Suppose Alice, Bob, Carol, and Dave are playing Secret Santa.
+    The code below outputs all of the different ways to assign gift recipients
+    such that nobody is assigned to himself or herself:
+
+        >>> for d in derangements(['Alice', 'Bob', 'Carol', 'Dave']):
+        ...    print(', '.join(d))
+        Bob, Alice, Dave, Carol
+        Bob, Carol, Dave, Alice
+        Bob, Dave, Alice, Carol
+        Carol, Alice, Dave, Bob
+        Carol, Dave, Alice, Bob
+        Carol, Dave, Bob, Alice
+        Dave, Alice, Bob, Carol
+        Dave, Carol, Alice, Bob
+        Dave, Carol, Bob, Alice
+
+    For numeric inputs, the input *by_index* can be used to either restrict by
+    original input index, or by value of the element
+
+        >>> sorted(derangements([1, 0, 2]))
+        [(0, 2, 1), (2, 1, 0)]
+        >>> sorted(derangements([0, 1, 2], by_index=False))
+        [(1, 2, 0), (2, 0, 1)]
+
+    If *r* is given, only the *r*-length derangements are yielded.
+
+        >>> sorted(derangements(range(3), 2))
+        [(1, 0), (1, 2), (2, 0)]
+        >>> sorted(derangements([0, 2, 3], 2, by_index=False))
+        [(2, 0), (2, 3), (3, 0), (3, 2)]
+
+    Note that in case of duplicates in input, these are treated as separate
+    entries with the same restriction in the derangements. For example:
+
+        >>> for d in derangements(['Alice', 'Bob', 'Carol', 'Alice']):
+        ...    print(', '.join(d))
+        Bob, Alice, Alice, Carol
+        Bob, Alice, Alice, Carol
+        Carol, Alice, Alice, Bob
+        Carol, Alice, Alice, Bob
+
+    Here Alice is excluded from both original positions of Alice, and also
+    the results are duplicated which is in line with how duplicates are
+    handled by ``itertools.permutations``. If deduplicated derangements
+    are needed, use ``distinct_derangements``.
+    """
+    pool = tuple(iterable)
+    if by_index:
+        pool_unique = tuple(unique_everseen(pool))
+        pool_ind = tuple([pool_unique.index(x) for x in pool])
+        indices = pool_ind
+    else:
+        pool_ind = pool
+        indices = tuple(range(len(pool)))
+    return compress(
+        permutations(pool, r=r),
+        map(
+            all,
+            map(
+                map,
+                repeat(operator.ne),
+                repeat(indices),
+                permutations(pool_ind, r=r),
+            ),
+        ),
+    )
+
+
 class DerangementsRangeTests(TestCase):
 
     RANGE_NUM = 8
