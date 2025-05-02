@@ -1,0 +1,4 @@
+pandas==2.2.3
+polars==1.27.1
+pyspark==3.5.5
+pyarrow==19.0.1
