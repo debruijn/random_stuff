@@ -149,10 +149,4 @@ class BetterDate(IFLDate):
         return self.togregoriandate() == other.togregoriandate()
 
 # TODO: add catching dates that don't exist in one or both systems
-
-if __name__ == "__main__":
-
-    print(BetterDate(2025, 14, 1) == IFLDate(2025, 13, 29))
-    print(BetterDate.fromisoformat("2025-14-01"))
-    print(BetterDate.fromgregoriandate(date.fromisoformat("2025-07-28")))
-    print(IFLDate.fromgregoriandate(date.fromisoformat("2025-07-28")))
+# TODO: add time component as well
