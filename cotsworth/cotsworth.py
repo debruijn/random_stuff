@@ -90,7 +90,69 @@ class IFLDate:
             return False
         return IFLDate.year_has_leap_day(self.year)
 
-    def __eq__(self, other: "IFLDate | date"):
+    def __eq__(self, other: "IFLDate | BetterDate | date"):
         if type(other) == date:
             return self.togregoriandate() == other
         return self.togregoriandate() == other.togregoriandate()
+
+
+class BetterDate(IFLDate):
+
+    @staticmethod
+    def fromisoformat(date_string: str) -> "BetterDate":
+        return BetterDate(*tuple(int(x) for x in date_string.split('-')))
+
+    @staticmethod
+    def fromgregoriandate(date_obj: date) -> "BetterDate":
+        days_from_start_year = (date_obj - date(date_obj.year - 1, 12, 31)).days
+        return BetterDate.fromyearday(date_obj.year, days_from_start_year)
+
+    @staticmethod
+    def fromyearday(year, day):
+        month, day = divmod(day, BetterDate.DAYS_PER_MONTH)
+        return BetterDate(year, month+1, day+1)
+
+    def toyearday(self) -> int:
+        return (self.month-1) * self.DAYS_PER_MONTH + self.day - 1
+
+    def pretty_print(self):
+        if self.month == 14:
+            if self.month == 2:
+                return f"Leap Day of {self.year}"
+            else:
+                return f"Year Day of {self.year}"
+        if self.day in [1, 21]:
+            return f"{self.day}st of {self.MONTH_NAME_SHORT[self.month-1]}, {self.year}"
+        if self.day in [2, 22]:
+            return f"{self.day}nd of {self.MONTH_NAME_SHORT[self.month-1]}, {self.year}"
+        if self.day in [3, 23]:
+            return f"{self.day}rd of {self.MONTH_NAME_SHORT[self.month-1]} {self.year}"
+        return f"{self.day}th of {self.MONTH_NAME_SHORT[self.month-1]}, {self.year}"
+
+    def __add__(self, other: timedelta) -> "BetterDate":
+        return BetterDate.fromgregoriandate(self.togregoriandate() + other)
+
+    def __sub__(self, other: "timedelta | BetterDate | date") -> "BetterDate | timedelta":
+        if type(other) == timedelta:
+            return BetterDate.fromgregoriandate(self.togregoriandate() - other)
+        elif type(other) == date:
+            return self.togregoriandate() - other
+        else:
+            return self.togregoriandate() - other.togregoriandate()
+
+    def after_leap_day(self):
+        return False
+
+    def __eq__(self, other: "BetterDate | IFLDate | date"):
+        if type(other) == date:
+            return self.togregoriandate() == other
+        return self.togregoriandate() == other.togregoriandate()
+
+# TODO: add catching dates that don't exist in one or both systems
+
+if __name__ == "__main__":
+
+    print(BetterDate(2025, 14, 1) == IFLDate(2025, 13, 29))
+    print(BetterDate.fromisoformat("2025-14-01"))
+    print(BetterDate.fromgregoriandate(date.fromisoformat("2025-07-28")))
+    print(IFLDate.fromgregoriandate(date.fromisoformat("2025-07-28")))

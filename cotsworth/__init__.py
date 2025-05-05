@@ -1,1 +1,1 @@
-from .cotsworth import IFLDate
+from .cotsworth import IFLDate, BetterDate
